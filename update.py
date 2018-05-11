@@ -10,7 +10,7 @@ from sqlalchemy import desc
 from sqlalchemy import and_
 import parser
 
-engine = create_engine('postgresql://localhost:5432/news_parser', echo=False)
+engine = create_engine('postgresql://let4ik:let4ik_password@localhost/news_parser', echo=False)
 Base = declarative_base()
 
 
@@ -115,5 +115,5 @@ def new_docs(amount):
 
 import time
 cur_time = time.time()
-update_database(40, 40)
+update_database(10, 10)
 print('Elapsed time : {} seconds'.format(time.time() - cur_time))
