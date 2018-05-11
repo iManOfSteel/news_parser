@@ -78,7 +78,7 @@ session = Session()
 def update_database(themes_number, docs_number):
     i = 1
     for theme_data in parser.get_themes(themes_number, docs_number):
-        print('Theme number {} out of {}'.format(i, themes_number))Ну
+        print('Theme number {} out of {}'.format(i, themes_number))
         print(theme_data['title'])
         i += 1
         theme = session.query(Theme).filter(Theme.url == theme_data['url']).first()
