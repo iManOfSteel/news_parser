@@ -24,6 +24,12 @@ def get_topic(topic_name):
     return topic.text, topic.documents[:5]
 
 
+def get_doc(doc_title):
+    document = session.query(Document).filter(Document.title == doc_title).first()
+    if not document:
+        raise KeyError
+    return document.text
+
 def words(topic_name):
     topic = session.query(Theme).filter(Theme.title == topic_name).first()
     if not topic:
