@@ -3,6 +3,7 @@ import re
 import request_handler
 import os
 import matplotlib
+import statistics
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
@@ -127,9 +128,13 @@ def get_doc(message):
 
 def send_distribution_plots(cid, distributions, x_labels, y_labels):
     for i in range(len(distributions)):
+        mean = statistics.mean(distributions[i].values())
+        dev = statistics.stdev(distributions[i].values())
         plt.clf()
-        distribution = sorted(distributions[i].items(),
-                              key=lambda item: int(item[0]))
+        distribution = sorted(
+            filter(lambda item: mean - dev <= item[1] <= mean + dev,
+                   distributions[i].items()),
+            key=lambda item: int(item[0]))
         x, y = zip(*distribution)
         plt.plot(x, y)
         plt.xlabel(x_labels[i])
