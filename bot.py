@@ -122,13 +122,14 @@ def get_doc(message):
         bot.send_message(cid, "No such topic found")
 
 
-def send_distribution_plots(cid, distributions, x_labels, y_labels):
+def send_distributions(cid, distributions, x_labels, y_labels, relevant=False):
     for i in range(len(distributions)):
         mean = statistics.mean(distributions[i].values())
         dev = statistics.stdev(distributions[i].values())
         plt.clf()
         distribution = sorted(
-            filter(lambda item: mean - 3 * dev <= item[1] <= mean + 3 * dev,
+            filter(lambda item: (not relevant) or
+                                (mean - 3 * dev <= item[1] <= mean + 3 * dev),
                    distributions[i].items()),
             key=lambda item: int(item[0]))
         x, y = zip(*distribution)
@@ -153,7 +154,7 @@ def describe_doc(message):
         distributions = request_handler.describe_doc(document_title)
         x_labels = ['Word length', 'Word frequency']
         y_labels = ['Number of words', 'Number of words']
-        send_distribution_plots(cid, distributions, x_labels, y_labels)
+        send_distributions(cid, distributions, x_labels, y_labels, relevant=True)
     except KeyError:
         bot.send_message(cid, "No such document found")
 
@@ -173,7 +174,7 @@ def describe_topic(message):
         bot.send_message(cid, res)
         x_labels = ['Word length', 'Word frequency']
         y_labels = ['Number of words', 'Number of words']
-        send_distribution_plots(cid, distributions, x_labels, y_labels)
+        send_distributions(cid, distributions, x_labels, y_labels, relevant=True)
     except KeyError:
         bot.send_message(cid, "No such topic found")
 
