@@ -1,7 +1,10 @@
 import telebot
 import re
 import request_handler
+import os
+import matplotlib
 import matplotlib.pyplot as plt
+matplotlib.use("Agg")
 
 from telebot import apihelper
 
@@ -131,17 +134,20 @@ def describe_doc(message):
         return
     document_title = arg[0]
     try:
-        length_distribution, frequency_distribution =\
-            request_handler.describe_doc(document_title)
-        plt.plot(length_distribution.keys(), length_distribution.values())
-        plt.xlabel('Word length')
-        plt.ylabel('Number of words')
-        plt.savefig('length_distribution.png')
-        ld_plot = open('length_distribution.png', 'rb')
-        bot.send_photo(cid, ld_plot)
+        distributions = request_handler.describe_doc(document_title)
+        x_labels = ['Word length', 'Word frequency']
+        for i in range(2):
+            distribution = sorted(distributions[i].items())
+            x, y = zip(*distribution)
+            plt.plot(x, y)
+            plt.xlabel(x_labels[i])
+            plt.ylabel('Number of words')
+            plt.savefig('distribution.png')
+            plot = open('distribution.png', 'rb')
+            bot.send_photo(cid, plot)
+            os.remove('distribution.png')
     except KeyError:
         bot.send_message(cid, "No such document found")
-
 
 
 bot.polling()
