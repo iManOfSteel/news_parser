@@ -47,9 +47,9 @@ def help(message):
 @bot.message_handler(commands=['new_docs'])
 def new_docs(message):
     cid = message.chat.id
-    arg = re.findall(r'/new_docs ([0-9]+)', message.text)
+    arg = re.findall(r'^/new_docs ([0-9]+)', message.text)
     if len(arg) == 0:
-        bot.send_message(cid, "Please enter number of news to show")
+        bot.send_message(cid, "Please enter the number of news to show")
         return
     amount = int(arg[0])
     docs = request_handler.new_docs(amount)
@@ -64,9 +64,9 @@ def new_docs(message):
 @bot.message_handler(commands=['new_topics'])
 def new_topics(message):
     cid = message.chat.id
-    arg = re.findall(r'/new_topics ([0-9]+)', message.text)
+    arg = re.findall(r'^/new_topics ([0-9]+)', message.text)
     if len(arg) == 0:
-        bot.send_message(cid, "Please enter number of topics to show")
+        bot.send_message(cid, "Please enter the number of topics to show")
         return
     amount = int(arg[0])
     topics = request_handler.new_topics(amount)
@@ -78,9 +78,9 @@ def new_topics(message):
 @bot.message_handler(commands=['topic'])
 def get_topic(message):
     cid = message.chat.id
-    arg = re.findall(r'/topic (.+)', message.text)
+    arg = re.findall(r'^/topic (.+)', message.text)
     if len(arg) == 0:
-        bot.send_message(cid, "Please enter topic name")
+        bot.send_message(cid, "Please the enter topic name")
         return
     topic_name = arg[0]
     try:
@@ -97,9 +97,9 @@ def get_topic(message):
 @bot.message_handler(commands=['doc'])
 def get_doc(message):
     cid = message.chat.id
-    arg = re.findall(r'/doc (.+)', message.text)
+    arg = re.findall(r'^/doc (.+)', message.text)
     if len(arg) == 0:
-        bot.send_message(cid, "Please enter document name")
+        bot.send_message(cid, "Please enter the document name")
         return
     document_title = arg[0]
     try:
@@ -112,9 +112,9 @@ def get_doc(message):
 @bot.message_handler(commands=['words'])
 def get_doc(message):
     cid = message.chat.id
-    arg = re.findall(r'/words (.+)', message.text)
+    arg = re.findall(r'^/words (.+)', message.text)
     if len(arg) == 0:
-        bot.send_message(cid, "Please enter topic name")
+        bot.send_message(cid, "Please enter the topic name")
         return
     topic_name = arg[0]
     try:
@@ -125,31 +125,56 @@ def get_doc(message):
         bot.send_message(cid, "No such topic found")
 
 
+def send_distribution_plots(cid, distributions, x_labels, y_labels):
+    for i in range(len(distributions)):
+        plt.clf()
+        distribution = sorted(distributions[i].items(),
+                              key=lambda item: int(item[0]))
+        x, y = zip(*distribution)
+        plt.plot(x, y)
+        plt.xlabel(x_labels[i])
+        plt.ylabel(y_labels[i])
+        plt.savefig('distribution.png')
+        plot = open('distribution.png', 'rb')
+        bot.send_photo(cid, plot)
+        os.remove('distribution.png')
+
+
 @bot.message_handler(commands=['describe_doc'])
 def describe_doc(message):
     cid = message.chat.id
     arg = re.findall(r'^/describe_doc (.+)', message.text)
     if len(arg) == 0:
-        bot.send_message(cid, "Please enter document name")
+        bot.send_message(cid, "Please enter the document name")
         return
     document_title = arg[0]
     try:
         distributions = request_handler.describe_doc(document_title)
         x_labels = ['Word length', 'Word frequency']
-        for i in range(2):
-            plt.clf()
-            distribution = sorted(distributions[i].items(),
-                                  key=lambda item: int(item[0]))
-            x, y = zip(*distribution)
-            plt.plot(x, y)
-            plt.xlabel(x_labels[i])
-            plt.ylabel('Number of words')
-            plt.savefig('distribution.png')
-            plot = open('distribution.png', 'rb')
-            bot.send_photo(cid, plot)
-            os.remove('distribution.png')
+        y_labels = ['Number of words', 'Number of words']
+        send_distribution_plots(cid, distributions, x_labels, y_labels)
     except KeyError:
         bot.send_message(cid, "No such document found")
+
+
+@bot.message_handler(commands=['describe_topic'])
+def describe_topic(message):
+    cid = message.chat.id
+    arg = re.findall(r'^/describe_topic (.+)', message.text)
+    if len(arg) == 0:
+        bot.send_message(cid, "Please enter the topic name")
+        return
+    topic_name = arg[0]
+    try:
+        docs_number, avg_length, distributions = request_handler.describe_topic(topic_name)
+        res = 'There are {} documents in the topic.\n' \
+              'Average document length is {}'.format(docs_number, avg_length)
+        bot.send_message(cid, res)
+        x_labels = ['Word length', 'Word frequency']
+        y_labels = ['Number of words', 'Number of words']
+        send_distribution_plots(cid, distributions, x_labels, y_labels)
+    except KeyError:
+        bot.send_message(cid, "No such topic found")
 
 
 bot.polling()

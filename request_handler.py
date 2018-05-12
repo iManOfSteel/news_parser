@@ -66,5 +66,5 @@ def describe_topic(topic_name):
         length_distribution += Counter(json.loads(document.length_distribution))
         words_frequency += Counter(json.loads(document.words_frequency))
     avg_length = total_length / docs_number
-    return docs_number, avg_length, length_distribution, Counter(words_frequency.values())
+    return docs_number, avg_length, (length_distribution, Counter(words_frequency.values()))
 
