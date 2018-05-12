@@ -3,8 +3,8 @@ import re
 import request_handler
 import os
 import matplotlib
-import matplotlib.pyplot as plt
 matplotlib.use("Agg")
+import matplotlib.pyplot as plt
 
 from telebot import apihelper
 
@@ -137,7 +137,9 @@ def describe_doc(message):
         distributions = request_handler.describe_doc(document_title)
         x_labels = ['Word length', 'Word frequency']
         for i in range(2):
-            distribution = sorted(distributions[i].items())
+            plt.clf()
+            distribution = sorted(distributions[i].items(),
+                                  key=lambda item: int(item[0]))
             x, y = zip(*distribution)
             plt.plot(x, y)
             plt.xlabel(x_labels[i])
