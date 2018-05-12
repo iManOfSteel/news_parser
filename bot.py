@@ -7,11 +7,7 @@ import statistics
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-from telebot import apihelper
 
-# apihelper.proxy = {'https': 'socks5://telegram:telegram@46.22.210.240:1080',
-#                    'http': 'socks5://telegram:telegram@46.22.210.240:1080'}
-# apihelper.proxy = {'http': 'http://133.18.205.118:3128'}
 bot = telebot.TeleBot('591316725:AAFGo5dbW_ztZpcotBDOXC_FBhPQsj32hTI')
 
 
@@ -132,7 +128,7 @@ def send_distribution_plots(cid, distributions, x_labels, y_labels):
         dev = statistics.stdev(distributions[i].values())
         plt.clf()
         distribution = sorted(
-            filter(lambda item: mean - dev <= item[1] <= mean + dev,
+            filter(lambda item: mean - 3 * dev <= item[1] <= mean + 3 * dev,
                    distributions[i].items()),
             key=lambda item: int(item[0]))
         x, y = zip(*distribution)
