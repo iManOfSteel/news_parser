@@ -30,6 +30,7 @@ def get_doc(doc_title):
         raise KeyError
     return document.text
 
+
 def words(topic_name):
     topic = session.query(Theme).filter(Theme.title == topic_name).first()
     if not topic:

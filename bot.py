@@ -1,6 +1,8 @@
 import telebot
 import re
 import request_handler
+import matplotlib.pyplot as plt
+
 from telebot import apihelper
 
 # apihelper.proxy = {'https': 'socks5://telegram:telegram@46.22.210.240:1080',
@@ -102,6 +104,44 @@ def get_doc(message):
         bot.send_message(cid, doc_text)
     except KeyError:
         bot.send_message(cid, "No such document found")
+
+
+@bot.message_handler(commands=['words'])
+def get_doc(message):
+    cid = message.chat.id
+    arg = re.findall(r'/words (.+)', message.text)
+    if len(arg) == 0:
+        bot.send_message(cid, "Please enter topic name")
+        return
+    topic_name = arg[0]
+    try:
+        words = request_handler.words(topic_name)
+        res = ', '.join(words)
+        bot.send_message(cid, res)
+    except KeyError:
+        bot.send_message(cid, "No such topic found")
+
+
+@bot.message_handler(commands=['describe_doc'])
+def describe_doc(message):
+    cid = message.chat.id
+    arg = re.findall(r'^/describe_doc (.+)', message.text)
+    if len(arg) == 0:
+        bot.send_message(cid, "Please enter document name")
+        return
+    document_title = arg[0]
+    try:
+        length_distribution, frequency_distribution =\
+            request_handler.describe_doc(document_title)
+        plt.plot(length_distribution.keys(), length_distribution.values())
+        plt.xlabel('Word length')
+        plt.ylabel('Number of words')
+        plt.savefig('length_distribution.png')
+        ld_plot = open('length_distribution.png', 'rb')
+        bot.send_photo(cid, ld_plot)
+    except KeyError:
+        bot.send_message(cid, "No such document found")
+
 
 
 bot.polling()
