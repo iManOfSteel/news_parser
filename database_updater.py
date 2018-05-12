@@ -1,5 +1,6 @@
 from database_config import Theme, Document, Tag, get_session
 import parser
+from datetime import datetime
 
 
 def update_database(themes_number, docs_number):
@@ -11,7 +12,8 @@ def update_database(themes_number, docs_number):
         i += 1
         theme = session.query(Theme).filter(Theme.url == theme_data['url']).first()
         if not theme:
-            theme = Theme(url=theme_data['url'], title=theme_data['title'], text=theme_data['text'])
+            theme = Theme(url=theme_data['url'], title=theme_data['title'],
+                          text=theme_data['text'], last_update=datetime.min)
         for document_data in theme_data['documents_list']:
             document = session.query(Document).filter(Document.url == document_data['url']).first()
             if not document:
@@ -19,7 +21,9 @@ def update_database(themes_number, docs_number):
                 document = Document(
                     url=document_data['url'], title=document_data['title'],
                     text=document_data['text'],
-                    upd_time=document_data['upd_time'])
+                    upd_time=document_data['upd_time'],
+                    length_distribution=document_data['length_distribution'],
+                    words_frequency=document_data['words_frequency'])
                 for tag_text in document_data['tags']:
                     tag = session.query(Tag).filter(Tag.text == tag_text).first()
                     if not tag:
@@ -32,6 +36,7 @@ def update_database(themes_number, docs_number):
                 document.title = document_data['title']
             if document not in theme.documents:
                 theme.documents.append(document)
+            theme.last_update = max(theme.last_update, document.upd_time)
         session.add(theme)
     session.commit()
 
@@ -39,5 +44,5 @@ def update_database(themes_number, docs_number):
 if __name__ == '__main__':
     import time
     cur_time = time.time()
-    update_database(40, 40)
+    update_database(10, 10)
     print('Elapsed time : {} seconds'.format(time.time() - cur_time))

@@ -1,15 +1,18 @@
-from bs4 import BeautifulSoup
-from time import sleep
 import urllib3
 import json
 import datetime
+import re
+import json
 from urllib3.util.retry import Retry
+from bs4 import BeautifulSoup
+from collections import Counter
+
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 months = dict(янв='1', фев='2', мар='3', апр='4', мая='5',
               июн='6', июл='7', авг='8', сен='9', окт='10', ноя='11', дек='12')
 
-retry = Retry(connect=50, backoff_factor=2)
+retry = Retry(connect=1000, backoff_factor=2)
 http = urllib3.PoolManager(retries=retry)
 
 
@@ -60,6 +63,13 @@ def get_themes(themes_number=7, docs_number=7):
     return res
 
 
+def get_document_statistics(text):
+    words = re.findall(r'[a-zA-Zа-яА-Я]+', text)
+    length_distribution = json.dumps(Counter(map(lambda word:len(word), words)))
+    words_frequency = json.dumps(Counter(words))
+    return length_distribution, words_frequency
+
+
 def get_document(url):
     res = http.request('GET', url)
     soup = BeautifulSoup(res.data, 'lxml')
@@ -68,4 +78,8 @@ def get_document(url):
         text = '\n'.join([x.text for x in soup.find('div', class_='article__text').find_all('p')])
     except AttributeError:
         text = ''
-    return dict(text=text, tags=tags)
+    length_distribution, words_frequency = get_document_statistics(text)
+    return dict(text=text, tags=tags, length_distribution=length_distribution,
+                words_frequency=words_frequency)
+
+

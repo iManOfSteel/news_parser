@@ -28,6 +28,7 @@ class Theme(Base):
     url = Column(String)
     title = Column(String)
     text = Column(String)
+    last_update = Column(DateTime)
     documents = relationship('Document', secondary=theme_document,
                              back_populates='themes')
 
@@ -43,13 +44,15 @@ class Document(Base):
     title = Column(String)
     text = Column(String)
     upd_time = Column(DateTime)
+    length_distribution = Column(String)
+    words_frequency = Column(String)
     themes = relationship('Theme', secondary=theme_document,
                           back_populates='documents')
     tags = relationship('Tag', secondary=document_tag,
                         back_populates='documents')
 
     def __repr__(self):
-        return "<Tag(id='%s', title='%s'')>" %\
+        return "<Document(id='%s', title='%s'')>" %\
                (self.id, self.title)
 
 
