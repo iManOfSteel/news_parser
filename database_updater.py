@@ -1,6 +1,7 @@
 from database_config import Theme, Document, Tag, get_session
 import parser
 from datetime import datetime
+import sys
 
 
 def update_database(themes_number, docs_number):
@@ -45,7 +46,8 @@ def update_database(themes_number, docs_number):
 
 
 if __name__ == '__main__':
-    import time
-    cur_time = time.time()
-    update_database(10, 10)
-    print('Elapsed time : {} seconds'.format(time.time() - cur_time))
+    while True:
+        if len(sys.argv) < 2:
+            update_database(40, 40)
+        else:
+            update_database(int(sys.argv[1]), int(sys.argv[2]))
