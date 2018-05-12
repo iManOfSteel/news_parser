@@ -25,7 +25,8 @@ def get_topic(topic_name):
 
 
 def get_doc(doc_title):
-    document = session.query(Document).filter(Document.title == doc_title).first()
+    document = session.query(Document).\
+        filter(Document.title == doc_title).first()
     if not document:
         raise KeyError
     return document.text
@@ -46,7 +47,8 @@ def words(topic_name):
 
 
 def describe_doc(doc_title):
-    document = session.query(Document).filter(Document.title == doc_title).first()
+    document = session.query(Document).\
+        filter(Document.title == doc_title).first()
     if not document:
         raise KeyError
     return Counter(json.loads(document.length_distribution)),\
@@ -63,8 +65,9 @@ def describe_topic(topic_name):
     words_frequency = Counter()
     for document in topic.documents:
         total_length += len(document.text)
-        length_distribution += Counter(json.loads(document.length_distribution))
+        length_distribution += Counter(
+            json.loads(document.length_distribution))
         words_frequency += Counter(json.loads(document.words_frequency))
     avg_length = total_length / docs_number
-    return docs_number, avg_length, (length_distribution, Counter(words_frequency.values()))
-
+    return docs_number, avg_length, (length_distribution,
+                                     Counter(words_frequency.values()))

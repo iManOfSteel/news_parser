@@ -7,7 +7,6 @@ from urllib3.util.retry import Retry
 from bs4 import BeautifulSoup
 from collections import Counter
 
-
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 months = dict(янв='1', фев='2', мар='3', апр='4', мая='5',
               июн='6', июл='7', авг='8', сен='9', окт='10', ноя='11', дек='12')
@@ -25,17 +24,18 @@ def get_items_from_ajax(url, items_number):
 def get_documents_list(theme_url, docs_number=20):
     result = []
     theme_id = theme_url.split('story/')[1]
-    url = 'https://www.rbc.ru/filter/ajax?story={}&offset=0'\
+    url = 'https://www.rbc.ru/filter/ajax?story={}&offset=0' \
         .format(theme_id)
     soup = get_items_from_ajax(url, docs_number)
     for item in soup.find_all('div', class_='item_story-single'):
-        upd_time = item.contents[3].find('span', class_='item__info').text.strip()
+        upd_time = item.contents[3].find('span',
+                                         class_='item__info').text.strip()
         if len(upd_time) < 6:
-            upd_time = str(datetime.datetime.today().date().day) + ' ' +\
+            upd_time = str(datetime.datetime.today().date().day) + ' ' + \
                        str(datetime.datetime.today().month) + ', ' + upd_time
         if len(upd_time) <= 13:
-            upd_time = upd_time.split(',')[0] + ' ' +\
-                       str(datetime.datetime.today().date().year) + ',' +\
+            upd_time = upd_time.split(',')[0] + ' ' + \
+                       str(datetime.datetime.today().date().year) + ',' + \
                        upd_time.split(',')[1]
         for key, value in months.items():
             upd_time = upd_time.replace(key, value)
@@ -65,7 +65,8 @@ def get_themes(themes_number=7, docs_number=7):
 
 def get_document_statistics(text):
     words = re.findall(r'[a-zA-Zа-яА-Я]+', text)
-    length_distribution = json.dumps(Counter(map(lambda word:len(word), words)))
+    length_distribution = json.dumps(
+        Counter(map(lambda word: len(word), words)))
     words_frequency = json.dumps(Counter(words))
     return length_distribution, words_frequency
 
@@ -75,11 +76,11 @@ def get_document(url):
     soup = BeautifulSoup(res.data, 'lxml')
     tags = [x.text for x in soup.find_all('a', class_='article__tags__link')]
     try:
-        text = '\n'.join([x.text for x in soup.find('div', class_='article__text').find_all('p')])
+        text = '\n'.join([x.text for x in soup.find(
+            'div',
+            class_='article__text').find_all('p')])
     except AttributeError:
         text = ''
     length_distribution, words_frequency = get_document_statistics(text)
     return dict(text=text, tags=tags, length_distribution=length_distribution,
                 words_frequency=words_frequency)
-
-

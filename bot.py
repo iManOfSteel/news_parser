@@ -154,7 +154,8 @@ def describe_doc(message):
         distributions = request_handler.describe_doc(document_title)
         x_labels = ['Word length', 'Word frequency']
         y_labels = ['Number of words', 'Number of words']
-        send_distributions(cid, distributions, x_labels, y_labels, relevant=True)
+        send_distributions(cid, distributions,
+                           x_labels, y_labels, relevant=True)
     except KeyError:
         bot.send_message(cid, "No such document found")
 
@@ -168,13 +169,15 @@ def describe_topic(message):
         return
     topic_name = arg[0]
     try:
-        docs_number, avg_length, distributions = request_handler.describe_topic(topic_name)
+        docs_number, avg_length, distributions =\
+            request_handler.describe_topic(topic_name)
         res = 'There are {} documents in the topic.\n' \
               'Average document length is {}'.format(docs_number, avg_length)
         bot.send_message(cid, res)
         x_labels = ['Word length', 'Word frequency']
         y_labels = ['Number of words', 'Number of words']
-        send_distributions(cid, distributions, x_labels, y_labels, relevant=True)
+        send_distributions(cid, distributions,
+                           x_labels, y_labels, relevant=True)
     except KeyError:
         bot.send_message(cid, "No such topic found")
 

@@ -16,10 +16,10 @@ document_tag = Table('document_tag', Base.metadata,
                             primary_key=True))
 
 theme_document = Table('theme_document', Base.metadata,
-                     Column('theme_id', ForeignKey('theme.id'),
-                            primary_key=True),
-                     Column('document_id', ForeignKey('document.id'),
-                            primary_key=True))
+                       Column('theme_id', ForeignKey('theme.id'),
+                              primary_key=True),
+                       Column('document_id', ForeignKey('document.id'),
+                              primary_key=True))
 
 
 class Theme(Base):
@@ -69,8 +69,8 @@ class Tag(Base):
 
 
 def get_session():
-    engine = create_engine('postgresql://let4ik:let4ik_password@localhost/news_parser', echo=False)
+    engine = create_engine(
+        'postgresql://let4ik:let4ik_password@localhost/news_parser',
+        echo=False)
     Base.metadata.create_all(engine)
-    Session = sessionmaker(bind=engine)
-    session = Session()
-    return session
+    return sessionmaker(bind=engine)()

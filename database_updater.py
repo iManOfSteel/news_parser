@@ -10,12 +10,14 @@ def update_database(themes_number, docs_number):
         print('Theme number {} out of {}'.format(i, themes_number))
         print(theme_data['title'])
         i += 1
-        theme = session.query(Theme).filter(Theme.url == theme_data['url']).first()
+        theme = session.query(Theme).\
+            filter(Theme.url == theme_data['url']).first()
         if not theme:
             theme = Theme(url=theme_data['url'], title=theme_data['title'],
                           text=theme_data['text'], last_update=datetime.min)
         for document_data in theme_data['documents_list']:
-            document = session.query(Document).filter(Document.url == document_data['url']).first()
+            document = session.query(Document).\
+                filter(Document.url == document_data['url']).first()
             if not document:
                 document_data.update(parser.get_document(document_data['url']))
                 document = Document(
@@ -25,7 +27,8 @@ def update_database(themes_number, docs_number):
                     length_distribution=document_data['length_distribution'],
                     words_frequency=document_data['words_frequency'])
                 for tag_text in document_data['tags']:
-                    tag = session.query(Tag).filter(Tag.text == tag_text).first()
+                    tag = session.query(Tag).\
+                        filter(Tag.text == tag_text).first()
                     if not tag:
                         tag = Tag(text=tag_text)
                     session.add(tag)
