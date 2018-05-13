@@ -43,12 +43,13 @@ def help(message):
 
 @bot.message_handler(commands=['new_docs'])
 def new_docs(message):
+    default_amount = 5
     cid = message.chat.id
     arg = re.findall(r'^/new_docs ([0-9]+)', message.text)
     if len(arg) == 0:
-        bot.send_message(cid, "Please enter the number of news to show")
-        return
-    amount = int(arg[0])
+        amount = default_amount
+    else:
+        amount = int(arg[0])
     docs = request_handler.new_docs(amount)
     for doc in docs:
         res = ''
@@ -60,12 +61,13 @@ def new_docs(message):
 
 @bot.message_handler(commands=['new_topics'])
 def new_topics(message):
+    default_amount = 5
     cid = message.chat.id
     arg = re.findall(r'^/new_topics ([0-9]+)', message.text)
     if len(arg) == 0:
-        bot.send_message(cid, "Please enter the number of topics to show")
-        return
-    amount = int(arg[0])
+        amount = default_amount
+    else:
+        amount = int(arg[0])
     topics = request_handler.new_topics(amount)
     for topic in topics:
         res = topic.title + '\n' + topic.url
@@ -77,7 +79,7 @@ def get_topic(message):
     cid = message.chat.id
     arg = re.findall(r'^/topic (.+)', message.text)
     if len(arg) == 0:
-        bot.send_message(cid, "Please the enter topic name")
+        bot.send_message(cid, "Please the enter topic name after /topic")
         return
     topic_name = arg[0]
     try:
@@ -96,7 +98,7 @@ def get_doc(message):
     cid = message.chat.id
     arg = re.findall(r'^/doc (.+)', message.text)
     if len(arg) == 0:
-        bot.send_message(cid, "Please enter the document name")
+        bot.send_message(cid, "Please enter the document name after /doc")
         return
     document_title = arg[0]
     try:
@@ -111,7 +113,7 @@ def get_doc(message):
     cid = message.chat.id
     arg = re.findall(r'^/words (.+)', message.text)
     if len(arg) == 0:
-        bot.send_message(cid, "Please enter the topic name")
+        bot.send_message(cid, "Please enter the topic name after /words")
         return
     topic_name = arg[0]
     try:
@@ -147,7 +149,8 @@ def describe_doc(message):
     cid = message.chat.id
     arg = re.findall(r'^/describe_doc (.+)', message.text)
     if len(arg) == 0:
-        bot.send_message(cid, "Please enter the document name")
+        bot.send_message(cid,
+                         "Please enter the document name aftor /describe_doc")
         return
     document_title = arg[0]
     try:
@@ -165,7 +168,8 @@ def describe_topic(message):
     cid = message.chat.id
     arg = re.findall(r'^/describe_topic (.+)', message.text)
     if len(arg) == 0:
-        bot.send_message(cid, "Please enter the topic name")
+        bot.send_message(cid,
+                         "Please enter the topic name after /describe_topic")
         return
     topic_name = arg[0]
     try:
