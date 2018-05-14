@@ -44,12 +44,13 @@ def help(message):
 @bot.message_handler(commands=['new_docs'])
 def new_docs(message):
     default_amount = 5
+    max_amount = 30
     cid = message.chat.id
     arg = re.findall(r'^/new_docs ([0-9]+)', message.text)
     if len(arg) == 0:
         amount = default_amount
     else:
-        amount = int(arg[0])
+        amount = min(max_amount, int(arg[0]))
     docs = request_handler.new_docs(amount)
     for doc in docs:
         res = ''
@@ -62,12 +63,13 @@ def new_docs(message):
 @bot.message_handler(commands=['new_topics'])
 def new_topics(message):
     default_amount = 5
+    max_amount = 30
     cid = message.chat.id
     arg = re.findall(r'^/new_topics ([0-9]+)', message.text)
     if len(arg) == 0:
         amount = default_amount
     else:
-        amount = int(arg[0])
+        amount = min(max_amount, int(arg[0]))
     topics = request_handler.new_topics(amount)
     for topic in topics:
         res = topic.title + '\n' + topic.url
