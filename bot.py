@@ -137,7 +137,7 @@ def send_distributions(cid, distributions, x_labels, y_labels,
             key=lambda item: int(item[0]))
         x, y = zip(*distribution)
         plt.xscale(x_scales[i])
-        plt.yscale[y_scales[i]]
+        plt.yscale(y_scales[i])
         plt.plot(x, y)
         plt.xlabel(x_labels[i])
         plt.ylabel(y_labels[i])
