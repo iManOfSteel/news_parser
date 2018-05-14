@@ -124,7 +124,8 @@ def get_doc(message):
         bot.send_message(cid, "No such topic found")
 
 
-def send_distributions(cid, distributions, x_labels, y_labels, relevant=False):
+def send_distributions(cid, distributions, x_labels, y_labels,
+                       x_scales, y_scales, relevant=False):
     for i in range(len(distributions)):
         mean = statistics.mean(distributions[i].values())
         dev = statistics.stdev(distributions[i].values())
@@ -135,6 +136,8 @@ def send_distributions(cid, distributions, x_labels, y_labels, relevant=False):
                    distributions[i].items()),
             key=lambda item: int(item[0]))
         x, y = zip(*distribution)
+        plt.xscale(x_scales[i])
+        plt.yscale[y_scales[i]]
         plt.plot(x, y)
         plt.xlabel(x_labels[i])
         plt.ylabel(y_labels[i])
@@ -157,8 +160,11 @@ def describe_doc(message):
         distributions = request_handler.describe_doc(document_title)
         x_labels = ['Word length', 'Word frequency']
         y_labels = ['Number of words', 'Number of words']
+        x_scales = ['linear', 'log']
+        y_scales = ['linear', 'log']
         send_distributions(cid, distributions,
-                           x_labels, y_labels, relevant=True)
+                           x_labels, y_labels,
+                           x_scales, y_scales, relevant=True)
     except KeyError:
         bot.send_message(cid, "No such document found")
 
@@ -180,8 +186,12 @@ def describe_topic(message):
         bot.send_message(cid, res)
         x_labels = ['Word length', 'Word frequency']
         y_labels = ['Number of words', 'Number of words']
+        x_scales = ['linear', 'log']
+        y_scales = ['linear', 'log']
         send_distributions(cid, distributions,
-                           x_labels, y_labels, relevant=True)
+                           x_labels, y_labels,
+                           x_scales, y_scales,
+                           relevant=True)
     except KeyError:
         bot.send_message(cid, "No such topic found")
 
