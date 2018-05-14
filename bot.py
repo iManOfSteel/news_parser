@@ -153,7 +153,7 @@ def describe_doc(message):
     arg = re.findall(r'^/describe_doc (.+)', message.text)
     if len(arg) == 0:
         bot.send_message(cid,
-                         "Please enter the document name aftor /describe_doc")
+                         "Please enter the document name after /describe_doc")
         return
     document_title = arg[0]
     try:
@@ -164,7 +164,7 @@ def describe_doc(message):
         y_scales = ['linear', 'log']
         send_distributions(cid, distributions,
                            x_labels, y_labels,
-                           x_scales, y_scales, relevant=True)
+                           x_scales, y_scales, relevant=False)
     except KeyError:
         bot.send_message(cid, "No such document found")
 
@@ -191,7 +191,7 @@ def describe_topic(message):
         send_distributions(cid, distributions,
                            x_labels, y_labels,
                            x_scales, y_scales,
-                           relevant=True)
+                           relevant=False)
     except KeyError:
         bot.send_message(cid, "No such topic found")
 
