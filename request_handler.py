@@ -4,6 +4,7 @@ import json
 from database_config import Theme, Document, Tag, get_session
 from sqlalchemy import desc
 from collections import Counter
+import pymorphy2
 
 
 session = get_session()
@@ -39,7 +40,9 @@ def words(topic_name):
     title_words = []
     for document in topic.documents:
         title_words.extend(re.findall(r'[a-zA-Zа-яА-Я]+', document.title))
-    title_words = filter(lambda word: len(word) > 2, title_words)
+    morph = pymorphy2.MorphAnalyzer()
+    title_words = map(lambda word: morph.parse(word)[0].normal_form, title_words)
+    title_words = filter(lambda word: morph.parse(word)[0].tag.POS == 'NOUN', title_words)
     words_count = sorted(Counter(title_words).items(),
                          key=operator.itemgetter(1), reverse=True)
     describing_words = list(map(lambda x: x[0], words_count))[:5]
