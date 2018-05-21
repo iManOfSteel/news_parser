@@ -6,27 +6,10 @@ import matplotlib
 import statistics
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+from config import DEFAULT_MESSAGE_AMOUNT, MAX_MESSAGE_AMOUNT, HELP_MESSAGE
 
 
 bot = telebot.TeleBot('591316725:AAFGo5dbW_ztZpcotBDOXC_FBhPQsj32hTI')
-
-
-help_message = '''\
-You can use these commands:
-/help - help
-/new_docs <N> - показать N самых свежих новостей
-/new_topics <N> - показать N самых свежих тем
-/topic <topic_name> - показать описание темы и заголовки 5 самых свежих новостей в этой теме
-/doc <doc_title> - показать текст документа с заданным заголовком
-/words <topic_name> - показать 5 слов, лучше всего характеризующих тему
-/describe_doc <doc_title> - вывести статистику по документу. Статистика:
-    1) распределение частот слов
-    2) распределение длин слов
-/describe_topic <topic_name> - вывести статистику по теме. Статистика:
-    1) количество документов в теме
-    2) средняя длина документов
-    3) распределение частот слов в рамках всей темы
-    4) распределение длин слов в рамках всей темы'''
 
 
 @bot.message_handler(commands=['start'])
@@ -36,21 +19,19 @@ def greetings(message):
 
 
 @bot.message_handler(commands=['help'])
-def help(message):
+def help_cmd(message):
     cid = message.chat.id
-    bot.send_message(cid, help_message)
+    bot.send_message(cid, HELP_MESSAGE)
 
 
 @bot.message_handler(commands=['new_docs'])
 def new_docs(message):
-    default_amount = 5
-    max_amount = 30
     cid = message.chat.id
     arg = re.findall(r'^/new_docs ([0-9]+)', message.text)
     if len(arg) == 0:
-        amount = default_amount
+        amount = DEFAULT_MESSAGE_AMOUNT
     else:
-        amount = min(max_amount, int(arg[0]))
+        amount = min(MAX_MESSAGE_AMOUNT, int(arg[0]))
     docs = request_handler.new_docs(amount)
     for doc in docs:
         res = ''
@@ -62,14 +43,12 @@ def new_docs(message):
 
 @bot.message_handler(commands=['new_topics'])
 def new_topics(message):
-    default_amount = 5
-    max_amount = 30
     cid = message.chat.id
     arg = re.findall(r'^/new_topics ([0-9]+)', message.text)
     if len(arg) == 0:
-        amount = default_amount
+        amount = DEFAULT_MESSAGE_AMOUNT
     else:
-        amount = min(max_amount, int(arg[0]))
+        amount = min(MAX_MESSAGE_AMOUNT, int(arg[0]))
     topics = request_handler.new_topics(amount)
     for topic in topics:
         res = topic.title + '\n' + topic.url

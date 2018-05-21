@@ -1,15 +1,14 @@
 import urllib3
-import json
+import pymorphy2
 import datetime
 import re
 import json
 from urllib3.util.retry import Retry
 from bs4 import BeautifulSoup
 from collections import Counter
+from config import MONTHS
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-months = dict(янв='1', фев='2', мар='3', апр='4', мая='5',
-              июн='6', июл='7', авг='8', сен='9', окт='10', ноя='11', дек='12')
 
 retry = Retry(connect=1000, backoff_factor=2)
 http = urllib3.PoolManager(retries=retry)
@@ -37,7 +36,7 @@ def get_documents_list(theme_url, docs_number=20):
             upd_time = upd_time.split(',')[0] + ' ' + \
                        str(datetime.datetime.today().date().year) + ',' + \
                        upd_time.split(',')[1]
-        for key, value in months.items():
+        for key, value in MONTHS.items():
             upd_time = upd_time.replace(key, value)
         upd_time = datetime.datetime.strptime(upd_time, '%d %m %Y, %H:%M')
         item = item.contents[1]
@@ -64,7 +63,10 @@ def get_themes(themes_number=7, docs_number=7):
 
 
 def get_document_statistics(text):
+    morph = pymorphy2.MorphAnalyzer()
     words = re.findall(r'[a-zA-Zа-яА-Я]+', text)
+    words = map(lambda word: morph.parse(word)[0].normal_form, words)
+    words = filter(lambda word: morph.pase(word)[0].tag.POS == 'NOUN', words)
     length_distribution = json.dumps(
         Counter(map(lambda word: len(word), words)))
     words_frequency = json.dumps(Counter(words))

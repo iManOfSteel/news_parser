@@ -1,6 +1,7 @@
 from database_config import Theme, Document, Tag, get_session
 import parser
 from datetime import datetime
+from config import DOCUMENTS_TO_PARSE, THEMES_TO_PARSE
 import sys
 
 
@@ -47,7 +48,4 @@ def update_database(themes_number, docs_number):
 
 if __name__ == '__main__':
     while True:
-        if len(sys.argv) < 2:
-            update_database(40, 40)
-        else:
-            update_database(int(sys.argv[1]), int(sys.argv[2]))
+        update_database(THEMES_TO_PARSE, DOCUMENTS_TO_PARSE)
