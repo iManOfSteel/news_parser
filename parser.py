@@ -73,7 +73,8 @@ def get_document_statistics(text):
     morph = pymorphy2.MorphAnalyzer()
     words = re.findall(r'[a-zA-Zа-яА-Я]+', text)
     words = map(lambda word: morph.parse(word)[0].normal_form, words)
-    words = filter(lambda word: morph.parse(word)[0].tag.POS == 'NOUN', words)
+    words = list(filter(lambda word: morph.parse(word)[0].tag.POS == 'NOUN',
+                        words))
     length_distribution = json.dumps(
         Counter(map(lambda word: len(word), words)))
     words_frequency = json.dumps(Counter(words))
