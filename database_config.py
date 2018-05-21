@@ -23,6 +23,7 @@ theme_document = Table('theme_document', Base.metadata,
 
 
 class Theme(Base):
+    """Theme table"""
     __tablename__ = 'theme'
     id = Column(Integer, primary_key=True)
     url = Column(String)
@@ -38,6 +39,7 @@ class Theme(Base):
 
 
 class Document(Base):
+    """Document table"""
     __tablename__ = 'document'
     id = Column(Integer, primary_key=True)
     url = Column(String)
@@ -57,6 +59,7 @@ class Document(Base):
 
 
 class Tag(Base):
+    """Tag table"""
     __tablename__ = 'tag'
     id = Column(Integer, primary_key=True)
     text = Column(String)

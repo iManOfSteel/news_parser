@@ -15,12 +15,14 @@ http = urllib3.PoolManager(retries=retry)
 
 
 def get_items_from_ajax(url, items_number):
+    """Returns items form ajax"""
     response = http.request('GET', url + '&limit={}'.format(items_number))
     soup = BeautifulSoup(json.loads(response.data)['html'], 'lxml')
     return soup
 
 
 def get_documents_list(theme_url, docs_number=20):
+    """Returns documents related to theme"""
     result = []
     theme_id = theme_url.split('story/')[1]
     url = 'https://www.rbc.ru/filter/ajax?story={}&offset=0' \
@@ -29,6 +31,9 @@ def get_documents_list(theme_url, docs_number=20):
     for item in soup.find_all('div', class_='item_story-single'):
         upd_time = item.contents[3].find('span',
                                          class_='item__info').text.strip()
+
+        # There may be different date formats on page
+        # There can be no year, month or day.
         if len(upd_time) < 6:
             upd_time = str(datetime.datetime.today().date().day) + ' ' + \
                        str(datetime.datetime.today().month) + ', ' + upd_time
@@ -47,7 +52,8 @@ def get_documents_list(theme_url, docs_number=20):
     return result
 
 
-def get_themes(themes_number=7, docs_number=7):
+def get_themes(themes_number, docs_number):
+    """Return themes and documents, related to this theme"""
     res = []
     url = 'https://www.rbc.ru/story/filter/ajax?offset=0'
     soup = get_items_from_ajax(url, themes_number)
@@ -63,6 +69,7 @@ def get_themes(themes_number=7, docs_number=7):
 
 
 def get_document_statistics(text):
+    """Returns statistics, related to this text"""
     morph = pymorphy2.MorphAnalyzer()
     words = re.findall(r'[a-zA-Zа-яА-Я]+', text)
     words = map(lambda word: morph.parse(word)[0].normal_form, words)
@@ -74,6 +81,7 @@ def get_document_statistics(text):
 
 
 def get_document(url):
+    """Returns document with some statistics"""
     res = http.request('GET', url)
     soup = BeautifulSoup(res.data, 'lxml')
     tags = [x.text for x in soup.find_all('a', class_='article__tags__link')]

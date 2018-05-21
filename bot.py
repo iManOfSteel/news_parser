@@ -15,7 +15,7 @@ bot = telebot.TeleBot('591316725:AAFGo5dbW_ztZpcotBDOXC_FBhPQsj32hTI')
 @bot.message_handler(commands=['start'])
 def greetings(message):
     cid = message.chat.id
-    bot.send_message(cid, "Hey body, how are you?")
+    bot.send_message(cid, "Hey, how are you?")
 
 
 @bot.message_handler(commands=['help'])
@@ -90,7 +90,7 @@ def get_doc(message):
 
 
 @bot.message_handler(commands=['words'])
-def get_doc(message):
+def get_words(message):
     cid = message.chat.id
     arg = re.findall(r'^/words (.+)', message.text)
     if len(arg) == 0:
@@ -107,6 +107,16 @@ def get_doc(message):
 
 def send_distributions(cid, distributions, x_labels, y_labels,
                        x_scales, y_scales, relevant=False):
+    """Prints given distributions
+    :param cid: int
+        chat id
+    :param distributions: list
+        distributions to send
+    :param x_labels, y_labels: list
+        axes labels
+    :param x_scales, y_scales: list
+        axes scales
+    """
     for i in range(len(distributions)):
         mean = statistics.mean(distributions[i].values())
         dev = statistics.stdev(distributions[i].values())

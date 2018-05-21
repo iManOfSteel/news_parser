@@ -7,6 +7,7 @@ from collections import Counter
 import pymorphy2
 
 
+# Database session
 session = get_session()
 
 
@@ -34,6 +35,7 @@ def get_doc(doc_title):
 
 
 def words(topic_name):
+    """Returns words that describe given topic"""
     topic = session.query(Theme).filter(Theme.title == topic_name).first()
     if not topic:
         raise KeyError
@@ -41,6 +43,8 @@ def words(topic_name):
     for document in topic.documents:
         title_words.extend(re.findall(r'[a-zA-Zа-яА-Я]+', document.title))
     morph = pymorphy2.MorphAnalyzer()
+
+    # Transform words into the normal form, select only nouns.
     title_words = map(lambda word: morph.parse(word)[0].normal_form, title_words)
     title_words = filter(lambda word: morph.parse(word)[0].tag.POS == 'NOUN', title_words)
     words_count = sorted(Counter(title_words).items(),
@@ -50,6 +54,7 @@ def words(topic_name):
 
 
 def describe_doc(doc_title):
+    """Returns the statistics of the document"""
     document = session.query(Document).\
         filter(Document.title == doc_title).first()
     if not document:
@@ -59,6 +64,7 @@ def describe_doc(doc_title):
 
 
 def describe_topic(topic_name):
+    """Returns statistics of the topic"""
     topic = session.query(Theme).filter(Theme.title == topic_name).first()
     if not topic:
         raise KeyError

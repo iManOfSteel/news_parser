@@ -6,6 +6,7 @@ import sys
 
 
 def update_database(themes_number, docs_number):
+    """Updates database. Parses site looking for new docs/topics"""
     session = get_session()
     i = 1
     for theme_data in parser.get_themes(themes_number, docs_number):
