@@ -129,7 +129,7 @@ def send_distributions(cid, distributions, x_labels, y_labels,
         x, y = zip(*distribution)
         plt.xscale(x_scales[i])
         plt.yscale(y_scales[i])
-        plt.plot(x, y)
+        plt.bar(x, y)
         plt.xlabel(x_labels[i])
         plt.ylabel(y_labels[i])
         plt.savefig('distribution.png')
